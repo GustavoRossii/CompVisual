@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Dataset (grande; nao versionar as imagens)
+dataset/
+
+# Sistema
+.DS_Store
+Thumbs.db

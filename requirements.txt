@@ -1,0 +1,16 @@
+numpy>=1.26
+pandas>=2.0
+opencv-python>=4.8
+scikit-image>=0.22
+scikit-learn>=1.4
+scipy>=1.11
+matplotlib>=3.7
+seaborn>=0.13
+shap>=0.44
+# interface
+streamlit>=1.30
+# execucao dos notebooks
+jupyter>=1.0
+nbconvert>=7.0
+nbformat>=5.0
+ipykernel>=6.0

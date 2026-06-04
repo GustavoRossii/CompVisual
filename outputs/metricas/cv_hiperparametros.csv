@@ -1,0 +1,5 @@
+modelo,F1_cv,melhores_params
+KNN,0.8976041818712597,"{'clf__n_neighbors': 3, 'clf__weights': 'distance'}"
+LogReg,0.9196900114810562,{'clf__C': 10.0}
+RandomForest,0.9080132454201388,"{'clf__max_depth': 8, 'clf__n_estimators': 200}"
+SVM,0.913422531769306,"{'clf__C': 10.0, 'clf__gamma': 'scale', 'clf__kernel': 'rbf'}"
