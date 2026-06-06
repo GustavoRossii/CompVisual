@@ -45,8 +45,23 @@ def get_index():
 
 
 @st.cache_data(show_spinner=False)
+def get_metadata():
+    X = pd.read_csv(cfg.OUTPUTS / "X.csv")
+    y = pd.read_csv(cfg.OUTPUTS / "y.csv")
+    meta = X[["fruit", "folder", "path"]].copy()
+    meta["label"] = y["label"].values
+    meta["label_name"] = y["label_name"].values
+    return meta
+
+
+@st.cache_data(show_spinner=False)
 def data_exists():
     return (cfg.OUTPUTS / "X.csv").exists() and (cfg.OUTPUTS / "y.csv").exists()
+
+
+@st.cache_data(show_spinner=False)
+def dataset_available():
+    return cfg.DATASET_DIR.exists()
 
 
 @st.cache_data(show_spinner="Construindo X.csv / y.csv (segmentação + features)…")
@@ -91,7 +106,7 @@ tabs = st.tabs(["📊 Visão geral", "✂️ Segmentação", "🏋️ Treinar & 
 # =========================================================================== #
 with tabs[0]:
     st.subheader("Dataset")
-    index = get_index()
+    index = get_metadata()
     y = pd.read_csv(cfg.OUTPUTS / "y.csv")
     c1, c2, c3 = st.columns(3)
     c1.metric("Imagens (amostradas)", len(index))
@@ -104,10 +119,19 @@ with tabs[0]:
     st.bar_chart(tab)
 
     st.markdown("**Exemplos por classe**")
-    cols = st.columns(6)
-    for col, folder in zip(cols, cfg.FOLDER_INFO):
-        r = index[index.folder == folder].iloc[0]
-        col.image(ds.load_image(r["path"]), caption=folder, use_container_width=True)
+    if dataset_available():
+        cols = st.columns(6)
+        for col, folder in zip(cols, cfg.FOLDER_INFO):
+            r = index[index.folder == folder].iloc[0]
+            col.image(ds.load_image(r["path"]), caption=folder, use_container_width=True)
+    else:
+        fig_path = cfg.FIG_DIR / "exemplos_dataset.png"
+        if fig_path.exists():
+            st.image(str(fig_path), caption="Exemplos do dataset usados no projeto",
+                     use_container_width=True)
+        else:
+            st.info("A pasta `dataset/` nao esta presente. Baixe o dataset para "
+                    "exibir imagens individuais ou gere `outputs/figuras/exemplos_dataset.png`.")
 
     with st.expander("Por que usamos só as imagens originais?"):
         st.write(
@@ -123,16 +147,22 @@ with tabs[0]:
 with tabs[1]:
     st.subheader("Segmentação: Otsu × HSV")
     st.write("Compare os dois métodos. O **HSV** foi o escolhido para o pipeline.")
-    index = get_index()
+    index = get_metadata()
     colA, colB = st.columns([1, 2])
     with colA:
-        src_choice = st.radio("Imagem", ["Do dataset", "Enviar arquivo"])
+        choices = ["Enviar arquivo"]
+        if dataset_available():
+            choices.insert(0, "Do dataset")
+        src_choice = st.radio("Imagem", choices)
         if src_choice == "Do dataset":
             folder = st.selectbox("Classe", list(cfg.FOLDER_INFO))
             sub = index[index.folder == folder].reset_index(drop=True)
             i = st.slider("Índice", 0, len(sub) - 1, 0)
             img = ds.load_image(sub.iloc[i]["path"])
         else:
+            if not dataset_available():
+                st.caption("A pasta `dataset/` nao esta presente; use uma imagem enviada "
+                           "para testar a segmentacao.")
             up = st.file_uploader("Imagem da fruta", type=["png", "jpg", "jpeg"],
                                   key="seg_up")
             img = read_image_file(up) if up else None

@@ -38,6 +38,13 @@ def build_sample_index(n_per_group: int = cfg.N_PER_GROUP,
     Retorna um DataFrame com colunas: path, fruit, label, label_name, folder.
     A amostragem e estavel para um dado random_state (reprodutibilidade).
     """
+    if not cfg.DATASET_DIR.exists():
+        raise FileNotFoundError(
+            "Dataset nao encontrado. Organize as imagens em "
+            f"{cfg.DATASET_DIR} com as subpastas: "
+            + ", ".join(cfg.FOLDER_INFO.keys())
+        )
+
     rng = np.random.default_rng(random_state)
     rows = []
     for folder, (fruit, label) in cfg.FOLDER_INFO.items():

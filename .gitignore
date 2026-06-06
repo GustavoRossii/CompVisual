@@ -1,13 +1,34 @@
-# Python
+# Python / ambientes locais
 __pycache__/
 *.py[cod]
+*$py.class
+.python-version
 .venv/
 venv/
-.ipynb_checkpoints/
+env/
+ENV/
 
-# Dataset (grande; nao versionar as imagens)
+# Jupyter / Streamlit
+.ipynb_checkpoints/
+.streamlit/secrets.toml
+
+# Dataset bruto: grande e baixado externamente.
+# Os artefatos exigidos para entrega ficam versionados em outputs/.
 dataset/
 
-# Sistema
+# Artefatos locais de execucao
+*.log
+*.tmp
+*.bak
+*.pkl
+*.joblib
+
+# Enunciado local, nao faz parte do repositorio de entrega
+PROJETO_INSPECAO_VISUAL_CLASSIFICACAO_A1*.pdf
+
+# Sistema / editores
 .DS_Store
 Thumbs.db
+desktop.ini
+.vscode/
+.idea/
