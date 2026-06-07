@@ -1,9 +1,3 @@
-"""Gera os 4 notebooks do projeto (notebooks/*.ipynb) com nbformat.
-
-Mantemos o conteudo dos notebooks aqui para versiona-lo como codigo. Apos gerar,
-execute-os com:
-    jupyter nbconvert --to notebook --execute --inplace notebooks/*.ipynb
-"""
 from __future__ import annotations
 
 from pathlib import Path
@@ -15,7 +9,6 @@ ROOT = Path(__file__).resolve().parents[1]
 NB_DIR = ROOT / "notebooks"
 NB_DIR.mkdir(exist_ok=True)
 
-# Preambulo: garante que `import src...` funcione a partir de notebooks/
 PREAMBLE = (
     "import sys, os\n"
     "from pathlib import Path\n"
@@ -58,9 +51,7 @@ def nb_segmentacao():
         "Este notebook cobre a **aquisição**, o **pré-processamento** e a **segmentação** "
         "(isolamento do objeto), comparando **dois métodos**."
     ))
-    c.append(new_code_cell(PREAMBLE +
-        "from src import config as cfg, dataset as ds, segmentation as seg\n"
-        "index = ds.build_sample_index()\n"
+    c.append(new_code_cell(
         "print('Total de imagens amostradas:', len(index))\n"
         "display(index.groupby(['fruit','label_name']).size().unstack())"
     ))
@@ -161,8 +152,7 @@ def nb_features():
         "for g,cols in ft.FEATURE_GROUPS.items(): print(f'  {g:9s} ({len(cols)}): '+', '.join(cols))\n"
         "display(X[feat].describe().T.head(12))"
     ))
-    c.append(new_markdown_cell(
-        "## Coerência das features com o problema\n"
+    c.append(new_markdown_cell("## Coerência das features com o problema\n"
         "Em *fresh × rotten*, esperamos que **cor** (escurecimento, manchas marrons) e "
         "**textura** (rugosidade, irregularidade da casca) separem melhor que a **forma**, "
         "já que a podridão altera principalmente a superfície."
@@ -228,7 +218,7 @@ def nb_features():
         "from sklearn.model_selection import cross_val_score, StratifiedKFold\n"
         "cvk = StratifiedKFold(5, shuffle=True, random_state=cfg.RANDOM_STATE)\n"
         "combos = {'cor':['cor'],'textura':['textura'],'forma':['forma'],'hu':['hu'],\n"
-        "          'podridao':['podridao'],'cor+textura':['cor','textura'],\n"
+        "          'podridão':['podridão'],'cor+textura':['cor','textura'],\n"
         "          'cor+textura+forma':['cor','textura','forma'],\n"
         "          'TODAS':list(ft.FEATURE_GROUPS)}\n"
         "res=[]\n"
@@ -332,8 +322,7 @@ def nb_classificacao():
     c.append(new_code_cell(
         "plots.plot_roc(fitted, sp.Xte, sp.yte, save_as='roc_todos.png'); plt.show()"
     ))
-    c.append(new_markdown_cell(
-        "## Análise de erros\n"
+    c.append(new_markdown_cell("## Análise de erros\n"
         "Mostramos imagens em que o melhor modelo errou, com hipóteses sobre a causa."
     ))
     c.append(new_code_cell(

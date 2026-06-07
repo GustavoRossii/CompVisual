@@ -1,9 +1,4 @@
-"""Utilitarios de modelagem compartilhados pelos notebooks 03 e 04.
 
-Centraliza o split estratificado treino/val/teste e a fabrica de modelos, de modo
-que a classificacao (03) e a explicabilidade (04) usem EXATAMENTE o mesmo split e
-os mesmos hiperparametros, garantindo coerencia e reprodutibilidade.
-"""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -57,15 +52,15 @@ class Split:
 
 def make_split(X: pd.DataFrame, y: np.ndarray,
                random_state: int = cfg.RANDOM_STATE) -> Split:
-    """Split estratificado 60% treino / 20% validacao / 20% teste.
+    """Split estratificado 60% treino / 20% validação / 20% teste.
 
-    O conjunto de teste e separado primeiro e nunca e tocado ate a avaliacao final.
+    O conjunto de teste é separado primeiro e nunca é tocado até a avaliação final.
     """
     idx = np.arange(len(y))
     # 20% teste
     idx_trval, idx_te = train_test_split(
         idx, test_size=0.20, stratify=y, random_state=random_state)
-    # dos 80% restantes, 25% -> validacao (=> 20% do total)
+    # dos 80% restantes, 25% -> validação (=> 20% do total)
     idx_tr, idx_val = train_test_split(
         idx_trval, test_size=0.25, stratify=y[idx_trval], random_state=random_state)
 
@@ -80,10 +75,10 @@ def make_split(X: pd.DataFrame, y: np.ndarray,
 # Modelos                                                                      #
 # --------------------------------------------------------------------------- #
 def make_models(random_state: int = cfg.RANDOM_STATE) -> dict:
-    """Retorna {nome: (pipeline, param_grid)} para os classificadores classicos.
+    """Retorna {nome: (pipeline, param_grid)} para os classificadores clássicos.
 
-    Cada pipeline embute o StandardScaler, de modo que o scaler e ajustado APENAS
-    nos dados de treino dentro de cada fold da validacao cruzada (sem vazamento).
+    Cada pipeline embute o StandardScaler, de modo que o scaler é ajustado APENAS
+    nos dados de treino dentro de cada fold da validação cruzada (sem vazamento).
     """
     def pipe(clf):
         return Pipeline([("scaler", StandardScaler()), ("clf", clf)])

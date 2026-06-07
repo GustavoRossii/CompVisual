@@ -1,9 +1,3 @@
-"""API de alto nível usada pelo app Streamlit.
-
-Reúne treino dos modelos e predição de uma imagem nova, reaproveitando os mesmos
-módulos do pipeline (segmentação, features, split, modelos) — garante que o app e os
-notebooks usem exatamente a mesma lógica.
-"""
 from __future__ import annotations
 
 import numpy as np
@@ -25,12 +19,7 @@ SEG_METHOD = "hsv"
 # Treino e avaliação de todos os modelos                                       #
 # --------------------------------------------------------------------------- #
 def train_all_models(progress=None):
-    """Treina os 4 classificadores com GridSearchCV e avalia no teste.
 
-    Retorna um dicionário com: modelos ajustados, split, tabela de métricas,
-    matrizes de confusão, scores de CV e os nomes das features.
-    `progress` (opcional) é um callable(frac, msg) para barra de progresso.
-    """
     X, y, meta = mdl.load_Xy()
     sp = mdl.make_split(X, y)
     cvk = StratifiedKFold(5, shuffle=True, random_state=cfg.RANDOM_STATE)
@@ -80,12 +69,6 @@ def train_all_models(progress=None):
 # Predição de uma imagem nova                                                  #
 # --------------------------------------------------------------------------- #
 def predict_image(img_rgb: np.ndarray, model, feat_names: list[str]):
-    """Segmenta, extrai features e prediz fresh/rotten para uma imagem.
-
-    Retorna (predicao:int, proba_rotten:float, mask, feats:dict, img_work).
-    `img_work` e a imagem ja redimensionada (mesmo tamanho da mascara), para
-    poder exibir o recorte sem conflito de dimensoes.
-    """
     img = _ensure_max_side(img_rgb, cfg.MAX_SIDE)
     mask = seg.segment(img, SEG_METHOD)
     feats = ft.extract_all(img, mask)

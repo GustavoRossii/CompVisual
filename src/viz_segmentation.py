@@ -1,9 +1,4 @@
-"""Gera figuras comparando os dois metodos de segmentacao (Otsu vs HSV).
 
-Salva em outputs/segmentacao/:
-  - comparativo_<fruta>_<cond>.png : original | Otsu | HSV (varios exemplos)
-  - falhas_segmentacao.png         : casos dificeis (crops justos / fundo atipico)
-"""
 from __future__ import annotations
 
 import sys
@@ -27,7 +22,7 @@ def _panel(ax, img, title):
 
 
 def comparison_grid(index, n_per=1, seed=0):
-    """Uma linha por (fruta x condicao): original | Otsu | HSV."""
+    """Uma linha por (fruta x condição): original | Otsu | HSV."""
     folders = list(cfg.FOLDER_INFO.keys())
     rng = __import__("numpy").random.default_rng(seed)
     rows = []
@@ -45,7 +40,7 @@ def comparison_grid(index, n_per=1, seed=0):
                f"Otsu  cov={seg.mask_coverage(m_otsu):.2f}")
         _panel(axes[i, 2], seg.apply_mask(img, m_hsv),
                f"HSV   cov={seg.mask_coverage(m_hsv):.2f}")
-    fig.suptitle("Segmentacao: Otsu vs HSV (objeto recortado)", fontsize=11)
+    fig.suptitle("Segmentação: Otsu vs HSV (objeto recortado)", fontsize=11)
     fig.tight_layout(rect=[0, 0, 1, 0.98])
     out = cfg.SEG_DIR / "comparativo_otsu_vs_hsv.png"
     fig.savefig(out, dpi=130)

@@ -1,4 +1,3 @@
-"""Funcoes de visualizacao reutilizadas pelos notebooks."""
 from __future__ import annotations
 
 import matplotlib.pyplot as plt
@@ -50,7 +49,7 @@ def boxplots_by_class(X, y, feats, save_as=None, ncols=4):
         axes[i].set_ylabel("")
     for j in range(len(feats), len(axes)):
         axes[j].axis("off")
-    fig.suptitle("Distribuicao das features por classe", fontsize=12)
+    fig.suptitle("Distribuição das features por classe", fontsize=12)
     fig.tight_layout(rect=[0, 0, 1, 0.97])
     if save_as:
         fig.savefig(cfg.FEAT_DIR / save_as, dpi=130)

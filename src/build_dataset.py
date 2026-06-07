@@ -1,11 +1,11 @@
-"""Constroi a tabela de features (X.csv) e os rotulos (y.csv).
+"""Constrói a tabela de features (X.csv) e os rótulos (y.csv).
 
-Executa o pipeline ate a extracao de features:
-  amostragem -> segmentacao (metodo escolhido) -> extracao de features.
+Executa o pipeline até a extração de features:
+  amostragem -> segmentação (método escolhido) -> extração de features
 
 Uso:
     python -m src.build_dataset            # a partir da raiz do projeto
-    python src/build_dataset.py            # tambem funciona
+    python src/build_dataset.py            # também funciona
 """
 from __future__ import annotations
 
@@ -28,7 +28,7 @@ else:
     from . import features as ft
     from . import segmentation as seg
 
-SEG_METHOD = "hsv"   # metodo escolhido para o pipeline principal (ver notebook 01)
+SEG_METHOD = "hsv"   # método escolhido para o pipeline principal (ver notebook 01)
 
 
 def main() -> None:
@@ -53,7 +53,7 @@ def main() -> None:
     feature_cols = ft.all_feature_names()
     X = X[feature_cols + ["coverage"]]
 
-    # metadados ajudam na analise de erros (nao entram no treino)
+    # metadados ajudam na análise de erros (não entram no treino)
     meta = index[["path", "fruit", "label", "label_name", "folder"]].copy()
 
     X_out = pd.concat([meta[["fruit", "folder", "path"]].reset_index(drop=True),
@@ -65,9 +65,9 @@ def main() -> None:
 
     print(f"\nX.csv  -> {cfg.OUTPUTS / 'X.csv'}  shape={X_out.shape}")
     print(f"y.csv  -> {cfg.OUTPUTS / 'y.csv'}  shape={y_out.shape}")
-    print(f"Cobertura media da mascara: {X['coverage'].mean():.3f} "
+    print(f"Cobertura média da máscara: {X['coverage'].mean():.3f} "
           f"(min {X['coverage'].min():.3f}, max {X['coverage'].max():.3f})")
-    print(f"Concluido em {time.time() - t0:.1f}s")
+    print(f"Concluído em {time.time() - t0:.1f}s")
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-"""Amostragem reproduzivel e carregamento de imagens do dataset de frutas."""
+"""Amostragem reproduzível e carregamento de imagens do dataset de frutas."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -10,11 +10,6 @@ import pandas as pd
 from . import config as cfg
 
 
-# Prefixos das imagens AUMENTADAS presentes no dataset Kaggle. Sao versoes
-# derivadas das originais (mesma fruta rotacionada/transladada/com ruido). Inclui-las
-# causaria VAZAMENTO DE DADOS (a mesma fruta cairia em train e test) e ainda
-# prejudica a segmentacao (cantos pretos da rotacao, ruido sal-e-pimenta).
-# As originais sao exatamente as que comecam por "Screen Shot".
 _AUG_PREFIXES = ("rotated_by", "translation_", "saltandpepper_", "vertical_flip_")
 
 
@@ -33,14 +28,14 @@ def _list_images(folder: Path, originals_only: bool = True) -> list[Path]:
 
 def build_sample_index(n_per_group: int = cfg.N_PER_GROUP,
                        random_state: int = cfg.RANDOM_STATE) -> pd.DataFrame:
-    """Sorteia n_per_group imagens de cada pasta (fruta x condicao).
+    """Sorteia n_per_group imagens de cada pasta (fruta x condição).
 
     Retorna um DataFrame com colunas: path, fruit, label, label_name, folder.
-    A amostragem e estavel para um dado random_state (reprodutibilidade).
+    A amostragem é estável para um dado random_state (reprodutibilidade).
     """
     if not cfg.DATASET_DIR.exists():
         raise FileNotFoundError(
-            "Dataset nao encontrado. Organize as imagens em "
+            "Dataset não encontrado. Organize as imagens em "
             f"{cfg.DATASET_DIR} com as subpastas: "
             + ", ".join(cfg.FOLDER_INFO.keys())
         )
@@ -65,10 +60,10 @@ def build_sample_index(n_per_group: int = cfg.N_PER_GROUP,
 
 
 def load_image(path: str | Path, max_side: int = cfg.MAX_SIDE) -> np.ndarray:
-    """Le uma imagem em RGB e redimensiona para que o lado maior == max_side."""
+    """Lê uma imagem em RGB e redimensiona para que o lado maior == max_side."""
     img = cv2.imread(str(path), cv2.IMREAD_COLOR)
     if img is None:
-        raise FileNotFoundError(f"Nao foi possivel ler a imagem: {path}")
+        raise FileNotFoundError(f"Não foi possível ler a imagem: {path}")
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     h, w = img.shape[:2]
     scale = max_side / max(h, w)

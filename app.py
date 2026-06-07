@@ -1,16 +1,6 @@
 """
-App Streamlit — Inspeção Visual Automática de Frutas (fresh × rotten)
-
 Execução:
     streamlit run app.py
-
-Abas:
-  1. Visão geral        — dataset, balanceamento, exemplos
-  2. Segmentação        — Otsu × HSV em qualquer imagem
-  3. Treinar & Comparar — treina os 4 modelos, tabela comparativa, ROC, matrizes
-  4. Resultados/modelo  — métricas e matriz de confusão por modelo
-  5. XAI                — importâncias, permutation, coeficientes, ablation, SHAP
-  6. Predição           — sobe foto de fruta e classifica + explicação
 """
 from __future__ import annotations
 
@@ -24,11 +14,11 @@ import streamlit as st
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
-from src import config as cfg          # noqa: E402
-from src import dataset as ds          # noqa: E402
-from src import features as ft         # noqa: E402
-from src import segmentation as seg    # noqa: E402
-from src import pipeline_api as api    # noqa: E402
+from src import config as cfg          
+from src import dataset as ds          
+from src import features as ft         
+from src import segmentation as seg    
+from src import pipeline_api as api    
 
 st.set_page_config(page_title="Inspeção de Frutas — fresh × rotten",
                    page_icon="🍎", layout="wide")
@@ -130,7 +120,7 @@ with tabs[0]:
             st.image(str(fig_path), caption="Exemplos do dataset usados no projeto",
                      use_container_width=True)
         else:
-            st.info("A pasta `dataset/` nao esta presente. Baixe o dataset para "
+            st.info("A pasta `dataset/` não está presente. Baixe o dataset para "
                     "exibir imagens individuais ou gere `outputs/figuras/exemplos_dataset.png`.")
 
     with st.expander("Por que usamos só as imagens originais?"):
@@ -161,8 +151,8 @@ with tabs[1]:
             img = ds.load_image(sub.iloc[i]["path"])
         else:
             if not dataset_available():
-                st.caption("A pasta `dataset/` nao esta presente; use uma imagem enviada "
-                           "para testar a segmentacao.")
+                st.caption("A pasta `dataset/` não está presente; use uma imagem enviada "
+                           "para testar a segmentação.")
             up = st.file_uploader("Imagem da fruta", type=["png", "jpg", "jpeg"],
                                   key="seg_up")
             img = read_image_file(up) if up else None

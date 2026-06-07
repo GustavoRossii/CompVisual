@@ -1,18 +1,4 @@
-"""Extracao de features manuais por fruta (vetor X de uma imagem).
 
-Famílias (todas pedidas no enunciado, Aula 8):
-  - FORMA:    area_frac, perimeter_norm, eccentricity, solidity, extent,
-              circularity, aspect_ratio, equiv_diam_norm
-  - INERCIAL: 7 momentos de Hu em escala log (hu1..hu7)
-  - COR:      media e desvio de R,G,B e H,S,V dentro da mascara (12),
-              histograma de matiz em 6 bins (hue_hist0..5)
-  - TEXTURA:  GLCM contrast/homogeneity/energy/correlation/dissimilarity/ASM (6),
-              histograma LBP uniforme em 10 bins (lbp0..9)
-  - PODRIDAO: dark_ratio, brown_ratio, sat_std (indicadores de mancha/escurecimento)
-
-Todas as estatisticas de cor/textura usam SOMENTE os pixels dentro da mascara,
-para nao contaminar com o fundo branco.
-"""
 from __future__ import annotations
 
 import cv2
@@ -69,7 +55,7 @@ def hu_features(mask: np.ndarray) -> dict:
     m = (mask > 0).astype(np.uint8) * 255
     moments = cv2.moments(m)
     hu = cv2.HuMoments(moments).flatten()
-    # escala logaritmica com sinal (padrao para tornar comparavel)
+    # escala logarítmica com sinal (padrão para tornar comparável)
     hu_log = -np.sign(hu) * np.log10(np.abs(hu) + 1e-30)
     return {f"hu{i+1}": float(hu_log[i]) for i in range(7)}
 
@@ -102,7 +88,7 @@ def color_features(img_rgb: np.ndarray, mask: np.ndarray) -> dict:
         feats[f"mean_{c}"] = float(vals.mean())
         feats[f"std_{c}"] = float(vals.std())
 
-    # histograma de matiz (6 bins) usando a mascara
+    # histograma de matiz (6 bins) usando a máscara
     hist = cv2.calcHist([hsv], [0], mask, [6], [0, 180]).flatten()
     hist = hist / (hist.sum() + 1e-8)
     for i in range(6):
@@ -118,7 +104,6 @@ def texture_features(img_rgb: np.ndarray, mask: np.ndarray) -> dict:
     m = mask > 0
     feats: dict[str, float] = {}
 
-    # --- GLCM sobre o recorte do bounding box (fundo zerado) ---
     g = gray.copy()
     g[~m] = 0
     ys, xs = np.where(m)
@@ -133,7 +118,6 @@ def texture_features(img_rgb: np.ndarray, mask: np.ndarray) -> dict:
                  "dissimilarity", "ASM"]:
         feats[f"glcm_{prop}"] = float(graycoprops(glcm, prop).mean())
 
-    # --- LBP (textura local) sobre pixels da fruta ---
     lbp = local_binary_pattern(gray, _LBP_P, _LBP_R, method="uniform")
     lbp_vals = lbp[m]
     hist, _ = np.histogram(lbp_vals, bins=_LBP_BINS, range=(0, _LBP_BINS),
@@ -144,10 +128,10 @@ def texture_features(img_rgb: np.ndarray, mask: np.ndarray) -> dict:
 
 
 # --------------------------------------------------------------------------- #
-# Indicadores de podridao                                                      #
+# Indicadores de podridão                                                      #
 # --------------------------------------------------------------------------- #
 def rot_features(img_rgb: np.ndarray, mask: np.ndarray) -> dict:
-    """Heuristicas diretamente ligadas a podridao: manchas escuras e marrons."""
+    """Heurísticas diretamente ligadas à podridão: manchas escuras e marrons."""
     m = mask > 0
     if m.sum() == 0:
         return {"dark_ratio": 0.0, "brown_ratio": 0.0, "sat_std": 0.0}
@@ -157,9 +141,9 @@ def rot_features(img_rgb: np.ndarray, mask: np.ndarray) -> dict:
     s = hsv[:, :, 1][m].astype(np.float32)
     v = hsv[:, :, 2][m].astype(np.float32)
 
-    # fracao de pixels muito escuros (manchas pretas / podridao)
+    # fração de pixels muito escuros (manchas pretas / podridão)
     dark_ratio = float((v < 60).mean())
-    # fracao de pixels marrons (matiz alaranjado/marrom com saturacao media-baixa)
+    # fração de pixels marrons (matiz alaranjado/marrom com saturação média-baixa)
     brown = (h >= 8) & (h <= 28) & (s > 40) & (v < 150)
     brown_ratio = float(brown.mean())
     sat_std = float(s.std())
@@ -179,7 +163,7 @@ def extract_all(img_rgb: np.ndarray, mask: np.ndarray) -> dict:
     return feats
 
 
-# Grupos de features (usados na analise por grupos e no ablation study)
+# Grupos de features (usados na análise por grupos e no ablation study)
 FEATURE_GROUPS = {
     "forma": ["area_frac", "perimeter_norm", "eccentricity", "solidity",
               "extent", "circularity", "aspect_ratio", "equiv_diam_norm"],
@@ -190,7 +174,7 @@ FEATURE_GROUPS = {
     "textura": (["glcm_contrast", "glcm_homogeneity", "glcm_energy",
                  "glcm_correlation", "glcm_dissimilarity", "glcm_ASM"]
                 + [f"lbp{i}" for i in range(_LBP_BINS)]),
-    "podridao": ["dark_ratio", "brown_ratio", "sat_std"],
+    "podridão": ["dark_ratio", "brown_ratio", "sat_std"],
 }
 
 
